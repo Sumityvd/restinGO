@@ -1,0 +1,415 @@
+basePath: /api/v1
+definitions:
+  models.Event:
+    properties:
+      dateTime:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      userID:
+        type: integer
+    required:
+    - dateTime
+    - description
+    - location
+    - name
+    type: object
+  models.EventCancalled:
+    properties:
+      message:
+        example: Cancelled!
+        type: string
+    type: object
+  models.EventCancalledError:
+    properties:
+      message:
+        example: Invalid event ID.
+        type: string
+    type: object
+  models.EventCreated:
+    properties:
+      event:
+        example: '{event data}'
+        type: string
+      message:
+        example: Event Created!
+        type: string
+    type: object
+  models.EventCreatedError:
+    properties:
+      message:
+        example: Could not create event. Try again later.
+        type: string
+    type: object
+  models.EventDeleted:
+    properties:
+      message:
+        example: Event deleted successfully!
+        type: string
+    type: object
+  models.EventDeletedError:
+    properties:
+      message:
+        example: Could not delete event. Try again later.
+        type: string
+    type: object
+  models.EventError:
+    properties:
+      message:
+        example: Could not fetch events. Try again later.
+        type: string
+    type: object
+  models.EventErrorId:
+    properties:
+      message:
+        example: Could not fetch event.
+        type: string
+    type: object
+  models.EventPlane:
+    properties:
+      dateTime:
+        type: string
+      description:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+    required:
+    - dateTime
+    - description
+    - location
+    - name
+    type: object
+  models.EventRegister:
+    properties:
+      message:
+        example: Registered!
+        type: string
+    type: object
+  models.EventRegisterError:
+    properties:
+      message:
+        example: Could not fetch event or register user for event.
+        type: string
+    type: object
+  models.EventUpdated:
+    properties:
+      message:
+        example: Event Updated!
+        type: string
+    type: object
+  models.EventUpdatedError:
+    properties:
+      message:
+        example: Could not update event. Try again later.
+        type: string
+    type: object
+  models.UserCreated:
+    properties:
+      message:
+        example: User created successfully
+        type: string
+    type: object
+  models.UserCreatedUnsuccessful:
+    properties:
+      message:
+        example: Could not save user.
+        type: string
+    type: object
+  models.UserExample:
+    properties:
+      email:
+        example: someone@something.com
+        type: string
+      password:
+        example: somewhere
+        type: string
+    type: object
+  models.UserLogin:
+    properties:
+      message:
+        example: Login successful!
+        type: string
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzA3MjUzMTU4LCJ1c2VySWQiOjJ9.IuP3ati5IfjYSUnifkM4Ri9htCtwWPBepddSF6MTNUI
+        type: string
+    type: object
+  models.UserLoginUnsuccessful:
+    properties:
+      message:
+        example: Could not authenticate user.
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: divijs75@gmail.com
+    name: Divij Sharma
+    url: https://github.com/dvjsharma
+  description: A simple event management API featuring functionalities such as event
+    creation, updating, deletion, and retrieval. Users can register for events, cancel
+    registrations, and utilize user registration and signup services. Documented using
+    Swagger!
+  title: Event Management API
+  version: 1.0.0
+paths:
+  /events:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all events
+      operationId: GetEvents
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of events
+          schema:
+            items:
+              $ref: '#/definitions/models.Event'
+            type: array
+        "500":
+          description: Could not fetch events
+          schema:
+            $ref: '#/definitions/models.EventError'
+      summary: Get all events
+      tags:
+      - Events
+    post:
+      consumes:
+      - application/json
+      description: Create a new event with the provided data
+      operationId: CreateEvent
+      parameters:
+      - description: Event data
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/models.EventPlane'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Event created!
+          schema:
+            $ref: '#/definitions/models.EventCreated'
+        "500":
+          description: Could not create event. Try again later.
+          schema:
+            $ref: '#/definitions/models.EventCreatedError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new event
+      tags:
+      - Events
+  /events/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an existing event by ID
+      operationId: DeleteEvent
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Event deleted successfully!
+          schema:
+            $ref: '#/definitions/models.EventDeleted'
+        "401":
+          description: Not authorized to delete event.
+          schema:
+            $ref: '#/definitions/models.EventDeletedError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete an event
+      tags:
+      - Events
+    get:
+      consumes:
+      - application/json
+      description: Retrieve details of a specific event by ID
+      operationId: GetEvent
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Event details
+          schema:
+            $ref: '#/definitions/models.Event'
+        "500":
+          description: Could not fetch event.
+          schema:
+            $ref: '#/definitions/models.EventErrorId'
+      summary: Get a specific event
+      tags:
+      - Events
+    put:
+      consumes:
+      - application/json
+      description: Update an existing event with the provided data
+      operationId: UpdateEvent
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated event data
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/models.EventPlane'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Event updated!
+          schema:
+            $ref: '#/definitions/models.EventUpdated'
+        "500":
+          description: Could not update event. Try again later.
+          schema:
+            $ref: '#/definitions/models.EventUpdatedError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an event
+      tags:
+      - Events
+  /events/{id}/register:
+    delete:
+      consumes:
+      - application/json
+      description: Cancel the registration of the authenticated user for a specific
+        event
+      operationId: CancelRegistration
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Cancelled!
+          schema:
+            $ref: '#/definitions/models.EventCancalled'
+        "400":
+          description: Invalid event ID.
+          schema:
+            $ref: '#/definitions/models.EventCancalledError'
+      security:
+      - ApiKeyAuth: []
+      summary: Cancel event registration
+      tags:
+      - Events
+    post:
+      consumes:
+      - application/json
+      description: Register the authenticated user for a specific event
+      operationId: RegisterForEvent
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Registered!
+          schema:
+            $ref: '#/definitions/models.EventRegister'
+        "500":
+          description: Could not fetch event or register user for event.
+          schema:
+            $ref: '#/definitions/models.EventRegisterError'
+      security:
+      - ApiKeyAuth: []
+      summary: Register for an event
+      tags:
+      - Events
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login to get JWT token
+      operationId: Login
+      parameters:
+      - description: Login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserExample'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful login response
+          schema:
+            $ref: '#/definitions/models.UserLogin'
+        "401":
+          description: Unsuccessful login response
+          schema:
+            $ref: '#/definitions/models.UserLoginUnsuccessful'
+      summary: Login
+      tags:
+      - Users
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: Create a new service user
+      operationId: CreateUser
+      parameters:
+      - description: User to create
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserExample'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User is created successfully
+          schema:
+            $ref: '#/definitions/models.UserCreated'
+        "500":
+          description: User Already existing
+          schema:
+            $ref: '#/definitions/models.UserCreatedUnsuccessful'
+      summary: Create new user
+      tags:
+      - Users
+securityDefinitions:
+  ApiKeyAuth:
+    description: Bearer Token from /login endpoint
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

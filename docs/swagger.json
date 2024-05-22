@@ -1,0 +1,621 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "A simple event management API featuring functionalities such as event creation, updating, deletion, and retrieval. Users can register for events, cancel registrations, and utilize user registration and signup services. Documented using Swagger!",
+        "title": "Event Management API",
+        "contact": {
+            "name": "Divij Sharma",
+            "url": "https://github.com/dvjsharma",
+            "email": "divijs75@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "host": "localhost:3000",
+    "basePath": "/api/v1",
+    "paths": {
+        "/events": {
+            "get": {
+                "description": "Retrieve a list of all events",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Get all events",
+                "operationId": "GetEvents",
+                "responses": {
+                    "200": {
+                        "description": "List of events",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Event"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch events",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new event with the provided data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Create a new event",
+                "operationId": "CreateEvent",
+                "parameters": [
+                    {
+                        "description": "Event data",
+                        "name": "event",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.EventPlane"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Event created!",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventCreated"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not create event. Try again later.",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventCreatedError"
+                        }
+                    }
+                }
+            }
+        },
+        "/events/{id}": {
+            "get": {
+                "description": "Retrieve details of a specific event by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Get a specific event",
+                "operationId": "GetEvent",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Event ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Event details",
+                        "schema": {
+                            "$ref": "#/definitions/models.Event"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch event.",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventErrorId"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an existing event with the provided data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Update an event",
+                "operationId": "UpdateEvent",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Event ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated event data",
+                        "name": "event",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.EventPlane"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Event updated!",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventUpdated"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not update event. Try again later.",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventUpdatedError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete an existing event by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Delete an event",
+                "operationId": "DeleteEvent",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Event ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Event deleted successfully!",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventDeleted"
+                        }
+                    },
+                    "401": {
+                        "description": "Not authorized to delete event.",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventDeletedError"
+                        }
+                    }
+                }
+            }
+        },
+        "/events/{id}/register": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Register the authenticated user for a specific event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Register for an event",
+                "operationId": "RegisterForEvent",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Event ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Registered!",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventRegister"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch event or register user for event.",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventRegisterError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Cancel the registration of the authenticated user for a specific event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Cancel event registration",
+                "operationId": "CancelRegistration",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Event ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cancelled!",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventCancalled"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid event ID.",
+                        "schema": {
+                            "$ref": "#/definitions/models.EventCancalledError"
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "Login to get JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Login",
+                "operationId": "Login",
+                "parameters": [
+                    {
+                        "description": "Login credentials",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserExample"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful login response",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserLogin"
+                        }
+                    },
+                    "401": {
+                        "description": "Unsuccessful login response",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserLoginUnsuccessful"
+                        }
+                    }
+                }
+            }
+        },
+        "/signup": {
+            "post": {
+                "description": "Create a new service user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create new user",
+                "operationId": "CreateUser",
+                "parameters": [
+                    {
+                        "description": "User to create",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserExample"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User is created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserCreated"
+                        }
+                    },
+                    "500": {
+                        "description": "User Already existing",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserCreatedUnsuccessful"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Event": {
+            "type": "object",
+            "required": [
+                "dateTime",
+                "description",
+                "location",
+                "name"
+            ],
+            "properties": {
+                "dateTime": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.EventCancalled": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Cancelled!"
+                }
+            }
+        },
+        "models.EventCancalledError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Invalid event ID."
+                }
+            }
+        },
+        "models.EventCreated": {
+            "type": "object",
+            "properties": {
+                "event": {
+                    "type": "string",
+                    "example": "{event data}"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Event Created!"
+                }
+            }
+        },
+        "models.EventCreatedError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Could not create event. Try again later."
+                }
+            }
+        },
+        "models.EventDeleted": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Event deleted successfully!"
+                }
+            }
+        },
+        "models.EventDeletedError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Could not delete event. Try again later."
+                }
+            }
+        },
+        "models.EventError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Could not fetch events. Try again later."
+                }
+            }
+        },
+        "models.EventErrorId": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Could not fetch event."
+                }
+            }
+        },
+        "models.EventPlane": {
+            "type": "object",
+            "required": [
+                "dateTime",
+                "description",
+                "location",
+                "name"
+            ],
+            "properties": {
+                "dateTime": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EventRegister": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Registered!"
+                }
+            }
+        },
+        "models.EventRegisterError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Could not fetch event or register user for event."
+                }
+            }
+        },
+        "models.EventUpdated": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Event Updated!"
+                }
+            }
+        },
+        "models.EventUpdatedError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Could not update event. Try again later."
+                }
+            }
+        },
+        "models.UserCreated": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "User created successfully"
+                }
+            }
+        },
+        "models.UserCreatedUnsuccessful": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Could not save user."
+                }
+            }
+        },
+        "models.UserExample": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "someone@something.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "somewhere"
+                }
+            }
+        },
+        "models.UserLogin": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Login successful!"
+                },
+                "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QyQGV4YW1wbGUuY29tIiwiZXhwIjoxNzA3MjUzMTU4LCJ1c2VySWQiOjJ9.IuP3ati5IfjYSUnifkM4Ri9htCtwWPBepddSF6MTNUI"
+                }
+            }
+        },
+        "models.UserLoginUnsuccessful": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Could not authenticate user."
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "Bearer Token from /login endpoint",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
